@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  pve:
+    build:
+      context: .
+      shm_size: '4gb'
+    image: proxmox:latest
+    container_name: pve
+    hostname: pve.lab.io
+    privileged: true
+    restart: always
+    shm_size: '4gb'
+    cap_add:
+      - ALL
+    security_opt:
+      - seccomp:unconfined	       
+    networks:
+      pve:
+        ipv4_address: 15.0.0.82
+    volumes:
+      - /etc/selinux/:/etc/selinux/
+      - /var/lib/vz:/var/lib/vz
+      - ${PWD}/network/interfaces:/etc/network/interfaces
+
+      
+networks:
+  pve:
+    name: pve
+    driver: macvlan
+    driver_opts:
+      parent: ens18
+    ipam:
+      config:
+        - subnet: "15.0.0.0/24"
+          ip_range: "15.0.0.0/24"
+          gateway: "15.0.0.1"
+        
